@@ -1,7 +1,9 @@
 version: '2'
 services:
   extractor:
-    image: python:3.6
+    build:
+      context: .
+      dockerfile: Extractor.Dockerfile
     volumes:
       - .:/home/ExtractorAPI
     ports:
