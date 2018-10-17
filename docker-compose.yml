@@ -1,0 +1,8 @@
+version: '2'
+services:
+  extractor:
+    image: python:3.6
+    volumes:
+      - .:/home/ExtractorAPI
+    ports:
+      - "8000:8000"
