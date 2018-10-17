@@ -1,6 +1,5 @@
 import requests
 import json
-import datetime
 from extractor import Extractor
 
 class SteamAPI(Extractor):
