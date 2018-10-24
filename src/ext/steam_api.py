@@ -1,4 +1,4 @@
-from extractor import Extractor, GameNotFound
+from ext.extractor import Extractor, GameNotFound
 
 class SteamAPI(Extractor):
 
