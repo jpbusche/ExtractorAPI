@@ -8,7 +8,7 @@ class SteamSpy(Extractor):
 		response = self.get_api(identifier)
 		if response['name'] is not None:
 			result = self.manipulate_data(response)
-			return json.dumps(result)
+			return result
 		else:
 			raise GameNotFound("Jogo não encontrado!!!")
 

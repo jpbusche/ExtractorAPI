@@ -1,4 +1,5 @@
 from ext.extractor import Extractor, GameNotFound
+import json
 
 class Currency(Extractor):
 
@@ -10,6 +11,6 @@ class Currency(Extractor):
 		if data['result'] == 1:
 			result = {}
 			result['currency'] = data['player_count']
-			return json.dumps(result)
+			return result
 		else:
 			raise GameNotFound("Jogo não encontrado!!!")

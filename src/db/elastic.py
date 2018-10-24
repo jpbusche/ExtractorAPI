@@ -53,5 +53,3 @@ class Elastic(Database):
 
 class ElasticNotConnected(Exception):
 	pass
-
-a = Elastic('elastic:9200', 'test')
