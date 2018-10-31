@@ -11,7 +11,7 @@ class Elastic(Database):
 		try:
 			self.elastic = self.connect_elasticsearch()
 		except ElasticNotConnected as enc:
-			print(enc)
+			raise ElasticNotConnected('Elasticsearch couldn\'t be connected!!!')
 
 	def get(self, identifier):
 		res = self.elastic.search(index=self.index_name, body={"query": {"match": {"steam_id": int(identifier)}}})

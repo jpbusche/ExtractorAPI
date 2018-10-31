@@ -10,7 +10,7 @@ class SteamSpy(Extractor):
 			result = self.manipulate_data(response)
 			return result
 		else:
-			raise GameNotFound("Jogo não encontrado!!!")
+			raise GameNotFound("Game not found!!!")
 
 	def manipulate_data(self, data):
 		result = {}

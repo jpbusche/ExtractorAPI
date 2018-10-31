@@ -19,7 +19,7 @@ class Extractor(ABC):
 			response = json.loads(response.text)
 			return response
 		else:
-			raise PageNotFound("Página não encontrada!!!")
+			raise PageNotFound("Page not found!!!")
 
 
 class PageNotFound(Exception):

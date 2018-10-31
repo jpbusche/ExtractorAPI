@@ -13,4 +13,4 @@ class Currency(Extractor):
 			result['currency'] = data['player_count']
 			return result
 		else:
-			raise GameNotFound("Jogo não encontrado!!!")
+			raise GameNotFound("Game not found!!!")

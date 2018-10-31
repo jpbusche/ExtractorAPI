@@ -1,4 +1,4 @@
-from extractor import Extractor, GameNotFound, PageNotFound
+from ext.extractor import Extractor, GameNotFound, PageNotFound
 import requests
 import json
 
@@ -12,7 +12,7 @@ class YoutubeAPI(Extractor):
 			result = self.manipulate_data(videos)
 			return result
 		else:
-			raise GameNotFound("Jogo não encontrado!!!")
+			raise GameNotFound("Game not found!!!")
 
 
 	def get_videos(self, identifier):	
@@ -29,7 +29,7 @@ class YoutubeAPI(Extractor):
 			response = json.loads(response.text)
 			return response
 		else:
-			raise PageNotFound("Página não encontrada!!!")
+			raise PageNotFound("Page not found!!!")
 
 	def manipulate_data(self, data):
 		result = {'view_count': 0, 'like_count': 0, 'dislike_count': 0}
@@ -40,7 +40,3 @@ class YoutubeAPI(Extractor):
 			result['like_count'] += int(response['likeCount'])
 			result['dislike_count'] += int(response['dislikeCount'])
 			return result
-
-		
-a = YoutubeAPI()
-print(a.get_game('Don\'t Starve'))

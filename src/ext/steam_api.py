@@ -7,11 +7,11 @@ class SteamAPI(Extractor):
 	def get_game(self, identifier):
 		response = self.get_api(identifier)
 		data = response[str(identifier)]
-		if data['success'] or data is not None:
+		if data['success'] and data is not None:
 			result = self.manipulate_data(data['data'])
 			return result
 		else:
-			raise GameNotFound("Jogo não encontrado!!!")
+			raise GameNotFound("Game not found!!!")
 
 	def manipulate_data(self, data):
 		result = {}
