@@ -17,7 +17,7 @@ class YoutubeAPI(Extractor):
 
 	def get_videos(self, identifier):	
 		videos_id = []
-		url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q={}&type=video&key={}&order=viewCount'
+		url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q={}&type=video&key={}&order=relevant'
 		response = self.get_api(url, identifier)
 		for vid in response['items']:
 			videos_id.append(vid['id']['videoId'])

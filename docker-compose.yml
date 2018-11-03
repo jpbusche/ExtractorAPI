@@ -3,6 +3,7 @@ services:
   extractor:
     depends_on:
       - elastic
+      - redis
     build:
       context: .
       dockerfile: Extractor.Dockerfile
@@ -25,3 +26,12 @@ services:
       - 9200:9200
     volumes:
       - ./esdata:/usr/share/elasticsearch/data
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redisdata:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
