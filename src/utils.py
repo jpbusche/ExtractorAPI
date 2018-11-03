@@ -1,6 +1,7 @@
 import colorlog
 import requests
 import json
+from ext.extractor import PageNotFound
 
 def setup_logger():
 	formatter = colorlog.ColoredFormatter(
@@ -21,3 +22,15 @@ def setup_logger():
 	logger.addHandler(handler)
 	logger.setLevel('DEBUG')
 	return logger
+
+def get_all_games():
+	games = []
+	response = requests.get('http://steamspy.com/api.php?request=all')
+	if response.status_code == requests.codes.ok:
+		response = json.loads(response.content)
+		for game in response:
+			pair = (response[game]['appid'], response[game]['name'])
+			games.append(pair)
+		return games
+	else:
+		raise PageNotFound("Page not found!!!")
