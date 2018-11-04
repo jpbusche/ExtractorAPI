@@ -17,7 +17,7 @@ class YoutubeAPI(Extractor):
 
 	def get_videos(self, identifier):	
 		videos_id = []
-		url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q={}&type=video&key={}&order=relevant'
+		url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q={}&type=video&key={}&order=relevance'
 		response = self.get_api(url, identifier)
 		for vid in response['items']:
 			videos_id.append(vid['id']['videoId'])
@@ -39,4 +39,4 @@ class YoutubeAPI(Extractor):
 			result['view_count'] += int(response['viewCount'])
 			result['like_count'] += int(response['likeCount'])
 			result['dislike_count'] += int(response['dislikeCount'])
-			return result
+		return result

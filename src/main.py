@@ -4,38 +4,37 @@ from ext.steam_spy import SteamSpy
 from ext.youtube_api import YoutubeAPI
 from ext.extractor import GameNotFound, PageNotFound
 from db.elastic import Elastic
-from utils import setup_logger
+from utils import setup_logger, get_all_games
 
-stapi = SteamAPI()
-stspy = SteamSpy()
-curr = Currency()
-youapi = YoutubeAPI()
+steam_api = SteamAPI()
+steam_spy = SteamSpy()
+steam_currency = Currency()
+youtube_api = YoutubeAPI()
 
-id = input("Entre com o número de ID: ")
 log = setup_logger()
 log.info('Initializing Elasticsearch')
 try:
-	elastic = Elastic('elastic:9200', 'test')
+	elastic = Elastic('elastic:9200', 'steam')
+	elastic.delete_index()
 	log.info('Elasticsearch connected')
-	log.info('Starting the extraction of id: %s', str(id))
-	game = stapi.get_game(id)
-	log.info('Steam API: successed!')
-	game.update(stspy.get_game(id))
-	log.info('Steam SPY: successed!')
-	game.update(curr.get_game(id))
-	log.info('Steam Currency: successed!')
-	if 'name' in game:
-		game.update(youapi.get_game(game['name']))
-		log.info('Youtube API: successed!')
-	else: raise GameNotFound('Game not found!!!')
-	log.info('Starting insersion in the Elasticsearch')
-	elastic.update(id, game)
-	log.info('Finishing insersion in the Elasticsearch')
-	elastic.delete(id)
-except GameNotFound as error:
-	log.warning(error)	
-except PageNotFound as error:
-	log.error(error)
+	games = get_all_games()
+	for game in games:
+		game_id, game_name = int(game[0]), str(game[1])
+		log.info('Starting the extraction of game: %s - %s', game_id, game_name)
+		try:
+			game = steam_api.get_game(game_id)
+			log.info('Steam API: successed!')
+			game.update(steam_spy.get_game(game_id))
+			log.info('Steam SPY: successed!')
+			game.update(steam_currency.get_game(game_id))
+			log.info('Steam Currency: successed!')
+			game.update(youtube_api.get_game(game_name))
+			log.info('Youtube API: successed!')
+			log.info('Starting insersion in the Elasticsearch')
+			elastic.update(game_id, game)
+			log.info('Finishing insersion in the Elasticsearch')
+		except Exception as error:
+			log.error(error)
 except Exception as error:
 	log.error(error)
 	

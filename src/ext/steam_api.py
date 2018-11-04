@@ -22,7 +22,7 @@ class SteamAPI(Extractor):
 		result['screenshots'] = []
 		result['name'] = data['name']
 		result['steam_id'] = data['steam_appid']
-		if data['is_free'] or data['price_overview'] is None:
+		if data['is_free'] or not 'price_overview' in data:
 			result['price'] = 0.0
 			result['is_free'] = True
 		else:
@@ -35,12 +35,14 @@ class SteamAPI(Extractor):
 			result['website'] = data['website']
 		else:
 			result['website'] = ""
-		for gnr in data['genres']:
-			result['genres'].append(gnr['description'])
+		if 'genres' in data:
+			for gnr in data['genres']:
+				result['genres'].append(gnr['description'])
 		for pbl in data['publishers']:
 			result['publishers'].append(pbl)
-		for dvp in data['developers']:
-			result['developers'].append(dvp)
+		if 'developers' in data:
+			for dvp in data['developers']:
+				result['developers'].append(dvp)
 		for plt in data['platforms']:
 			if plt: result['platforms'].append(str(plt).capitalize())
 		if data['release_date']['date'] != "":

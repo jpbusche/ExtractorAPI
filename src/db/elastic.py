@@ -50,6 +50,9 @@ class Elastic(Database):
 		else:
 			raise ElasticNotConnected('Elasticsearch couldn\'t be connected!!!')
 
+	def delete_index(self):
+		self.elastic.indices.delete(index=self.index_name, ignore=[400, 404])
+
 
 class ElasticNotConnected(Exception):
 	pass
