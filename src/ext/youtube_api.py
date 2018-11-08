@@ -36,7 +36,7 @@ class YoutubeAPI(Extractor):
 		url = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id={}&key={}'
 		for vid in data:
 			response = self.get_api(url, vid)['items'][0]['statistics']
-			result['view_count'] += int(response['viewCount'])
-			result['like_count'] += int(response['likeCount'])
-			result['dislike_count'] += int(response['dislikeCount'])
+			if 'viewCount' in response: result['view_count'] += int(response['viewCount'])
+			if 'likeCount' in response: result['like_count'] += int(response['likeCount'])
+			if 'dislikeCount' in response: result['dislike_count'] += int(response['dislikeCount'])
 		return result

@@ -2,7 +2,7 @@ from ext.currency import Currency
 from ext.steam_api import SteamAPI
 from ext.steam_spy import SteamSpy
 from ext.youtube_api import YoutubeAPI
-from ext.extractor import GameNotFound, PageNotFound
+from ext.extractor import GameNotFound
 from db.elastic import Elastic
 from utils import setup_logger, get_all_games
 import time
@@ -41,7 +41,7 @@ try:
 				log.warning(error)
 			else:
 				log.error(error)
-			fail_id.write(str(game_id) + " " + str(game_name))
+			fail_id.write(str(game_id) + " " + str(game_name) + "\n")
 	time.sleep(20*60)
 	ids = open("ids_fails.txt", "r")
 	log.info("Starting extraction of the fail ids")

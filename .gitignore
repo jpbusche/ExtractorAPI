@@ -106,5 +106,5 @@ venv.bak/
 .mypy_cache/
 
 # Elasticsearch and Redis Data
-esdata/
-redisdata/
+data/
+src/ids_fails.txt
