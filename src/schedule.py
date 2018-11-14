@@ -9,6 +9,10 @@ from ext.youtube_api import YoutubeAPI
 from ext.extractor import GameNotFound
 
 app = Celery('schedule')
+steam_api = SteamAPI()
+steam_spy = SteamSpy()
+steam_currency = Currency()
+youtube_api = YoutubeAPI()
 app.conf.broker_url = 'redis://redis:6379/0'
 log = setup_logger()
 fail_id = open("ids_fails.txt", "a")
@@ -18,12 +22,31 @@ elastic = Elastic('elastic:9200', 'steam')
 def insert_new_games():
 	lst1 = elastic.get_all()
 	lst2 = get_all_games()
-	print(lst2)
-	# print(games)
+	games = [game for game in lst2 if game not in lst1]
+	for game in games:
+		game_id, game_name = int(game[0]), str(game[1])
+		log.info('Starting the extraction of game: %s - %s', game_id, game_name)
+		try:
+			game = steam_api.get_game(game_id)
+			log.info('Steam API: successed!')
+			game.update(steam_spy.get_game(game_id))
+			log.info('Steam SPY: successed!')
+			game.update(steam_currency.get_game(game_id))
+			log.info('Steam Currency: successed!')
+			game.update(youtube_api.get_game(game_name))
+			log.info('Youtube API: successed!')
+			log.info('Starting insersion in the Elasticsearch')
+			elastic.update(game_id, game)
+			log.info('Finishing insersion in the Elasticsearch')
+		except Exception as error:
+			if type(error) == GameNotFound:
+				log.warning(error)
+			else:
+				log.error(error)
+			fail_id.write(str(game_id) + " " + str(game_name) + "\n")
 
 @app.task
 def update_steam_api():
-	steam_api = SteamAPI()
 	games = elastic.get_all()
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
@@ -42,7 +65,6 @@ def update_steam_api():
 
 @app.task
 def update_steam_spy():
-	steam_spy = SteamSpy()
 	games = elastic.get_all()
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
@@ -61,7 +83,6 @@ def update_steam_spy():
 
 @app.task
 def update_steam_currency():
-	currency = Currency()
 	games = elastic.get_all()
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
@@ -80,7 +101,6 @@ def update_steam_currency():
 
 @app.task
 def update_youtube_api():
-	youtube_api = YoutubeAPI()
 	games = elastic.get_all()
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
@@ -96,8 +116,6 @@ def update_youtube_api():
 			else:
 				log.error(error)
 			fail_id.write(str(game[0]) + " " + str(game[1]) + "\n")
-
-update_steam_currency()
 
 # @app.on_after_configure.connect
 # def setup_periodic_tasks(sender, **kwargs):

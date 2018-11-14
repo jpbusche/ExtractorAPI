@@ -63,6 +63,10 @@ class Elastic(Database):
 			games.append(pair)
 		return games
 
+	def create_index(self, index_body):
+		if self.elastic.indices.exists(self.index_name): self.delete_index()
+		self.elastic.indices.create(index=self.index_name, body=index_body, ignore=400)
+
 
 class ElasticNotConnected(Exception):
 	pass
