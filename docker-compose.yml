@@ -10,7 +10,7 @@ services:
     volumes:
       - ./src:/home/ExtractorAPI
     ports:
-      - "8000:8000"
+      - 8000:8000
 
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
@@ -35,3 +35,11 @@ services:
       - ./data/redisdata:/data
     entrypoint: redis-server --appendonly yes
     restart: always
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.5.1
+    environment:
+      SERVER_NAME: localhost
+      ELASTICSEARCH_URL: http://elastic:9200/
+    ports:
+      - 5601:5601
