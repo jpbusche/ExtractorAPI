@@ -9,7 +9,7 @@ class YoutubeAPI(Extractor):
 	def get_game(self, identifier):
 		videos = self.get_videos(identifier)
 		if len(videos) != 0:
-			result = self.manipulate_data(videos)
+			result = self.manipulate_data(videos, identifier)
 			return result
 		else:
 			raise GameNotFound("Game not found!!!")
@@ -31,12 +31,18 @@ class YoutubeAPI(Extractor):
 		else:
 			raise PageNotFound("Page not found!!!")
 
-	def manipulate_data(self, data):
-		result = {'view_count': 0, 'like_count': 0, 'dislike_count': 0}
+	def manipulate_data(self, data, identifier):
+		result = {}
 		url = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id={}&key={}'
+		sum_view = 0
+		sum_like = 0
+		sum_dislike = 0
 		for vid in data:
 			response = self.get_api(url, vid)['items'][0]['statistics']
-			if 'viewCount' in response: result['view_count'] += int(response['viewCount'])
-			if 'likeCount' in response: result['like_count'] += int(response['likeCount'])
-			if 'dislikeCount' in response: result['dislike_count'] += int(response['dislikeCount'])
+			if 'viewCount' in response: sum_view += int(response['viewCount'])
+			if 'likeCount' in response: sum_like += int(response['likeCount'])
+			if 'dislikeCount' in response: sum_dislike += int(response['dislikeCount'])
+		result['view_count'] = self.temporal_data(identifier, sum_view, 'view_count')
+		result['like_count'] = self.temporal_data(identifier, sum_like, 'like_count')
+		result['dislike_count'] = self.temporal_data(identifier, sum_dislike, 'dislike_count')
 		return result

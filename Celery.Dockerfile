@@ -6,4 +6,4 @@ RUN apt-get install curl
 
 WORKDIR /home/ExtractorAPI
 
-CMD ./extractor.sh
+CMD ./celery.sh

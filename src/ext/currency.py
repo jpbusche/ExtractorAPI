@@ -10,7 +10,7 @@ class Currency(Extractor):
 		data = response['response']
 		if data['result'] == 1:
 			result = {}
-			result['currency'] = data['player_count']
+			result['currency'] = self.temporal_data(identifier, data['player_count'], 'currency')
 			return result
 		else:
 			raise GameNotFound("Game not found!!!")

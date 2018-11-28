@@ -12,7 +12,7 @@ class Extractor(ABC):
 	def get_game(self, identifier):
 		pass
 
-	def manipulate_data(self, data):
+	def manipulate_data(self, data, identifier):
 		pass
 
 	def get_api(self, identifier):

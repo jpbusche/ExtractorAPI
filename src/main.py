@@ -29,13 +29,41 @@ index_body = {
 				"metacritic_score": { "type": "long" },
 				"positive_avaliantion": { "type": "long" },
 				"negative_avaliantion": { "type": "long" },
-				"median_hours_played": { "type": "long" },
-				"owners": { "type": "long" },
-				"currency": { "type": "long" },
-				"view_count": { "type": "long" },
-				"like_count": { "type": "long" },
-				"dislike_count": { "type": "long" },
-				"userscore": { "type": "double" },
+				"median_hours_played": { "type": "nested",
+					"properties": {
+						"value": { "type": "double" },
+						"date": {"type": "date"}
+					} },
+				"owners": { "type": "nested",
+					"properties": {
+						"value": { "type": "double" },
+						"date": {"type": "date"}
+					} },
+				"currency": { "type": "nested",
+					"properties": {
+						"value": { "type": "double" },
+						"date": {"type": "date"}
+					} },
+				"view_count": { "type": "nested",
+					"properties": {
+						"value": { "type": "double" },
+						"date": {"type": "date"}
+					} },
+				"like_count": { "type": "nested",
+					"properties": {
+						"value": { "type": "double" },
+						"date": {"type": "date"}
+					} },
+				"dislike_count": { "type": "nested",
+					"properties": {
+						"value": { "type": "double" },
+						"date": {"type": "date"}
+					} },
+				"userscore": { "type": "nested",
+					"properties": {
+						"value": { "type": "double" },
+						"date": {"type": "date"}
+					} },
 				"genres": { "type": "text", "store": "true" },
 				"categories": { "type": "text", "store": "true" },
 				"languages": { "type": "text", "store": "true" },
@@ -43,14 +71,12 @@ index_body = {
 				"developers": { "type": "text", "store": "true" },
 				"publishers": { "type": "text", "store": "true" },
 				"platforms": { "type": "text", "store": "true" },
-				"is_free": {"type": "boolean"},
-				"price": {
-					"type": "nested",
+				"is_free": { "type": "boolean" },
+				"price": { "type": "nested",
 					"properties": {
 						"value": { "type": "double" },
 						"date": {"type": "date"}
-					}
-				}
+					}}
 			}
 		}
 	}

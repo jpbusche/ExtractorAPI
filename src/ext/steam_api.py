@@ -20,7 +20,6 @@ class SteamAPI(Extractor):
 		result['developers'] = []
 		result['platforms'] = []
 		result['screenshots'] = []
-		result['price'] = []
 		result['name'] = data['name']
 		result['steam_id'] = data['steam_appid']
 		if data['is_free'] or not 'price_overview' in data:
