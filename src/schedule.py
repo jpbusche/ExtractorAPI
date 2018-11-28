@@ -173,6 +173,6 @@ app.conf.beat_schedule = {
 	},
 	"try-fails-id": {
 		"task": "schedule.try_fails_id",
-		"schedule": crontab(minute=0, hour=0, day_of_week='sunday')
+		"schedule": crontab(minute=0, hour=0, day_of_week='saturday')
 	}
 }
