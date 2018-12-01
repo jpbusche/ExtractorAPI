@@ -85,8 +85,9 @@ index_body = {
 try:
 	elastic = Elastic('elastic:9200', 'steam')
 	log.info('Elasticsearch connected')
-	log.info('Create index Steam on Elasticsearch')
+	log.info('Creating index Steam on Elasticsearch')
 	elastic.create_index(index_body)
+	log.info('Index Steam Created')
 	games = get_all_games()
 	for game in games:
 		game_id, game_name = int(game[0]), str(game[1])
@@ -111,3 +112,5 @@ try:
 				fail_id.write(str(game_id) + " || " + str(game_name) + "\n")
 except Exception as error:
 	log.error(error)
+
+log.info('First insersion completed')

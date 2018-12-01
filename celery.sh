@@ -3,7 +3,7 @@ echo "Trying connect to Elasticsearch"
 until curl --output /dev/null --silent --head --fail http://elastic:9200 
 do
 	echo "Trying connect to Elasticsearch"
-    sleep 5
+    sleep 30
 done
 echo "Connected with Elasticsearch"
 cd src/
