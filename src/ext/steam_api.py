@@ -2,7 +2,7 @@ from ext.extractor import Extractor, GameNotFound
 
 class SteamAPI(Extractor):
 
-	url = 'https://store.steampowered.com/api/appdetails/?appids={}'
+	url = 'https://store.steampowered.com/api/appdetails/?appids={}&cc=pt-br'
 
 	def get_game(self, identifier):
 		response = self.get_api(identifier)
@@ -26,7 +26,7 @@ class SteamAPI(Extractor):
 			result['price'] = self.temporal_data(identifier, 0.0, 'price')
 			result['is_free'] = True
 		else:
-			result['price'] = self.temporal_data(identifier, data['price_overview']['initial'] / 100, 'price')
+			result['price'] = self.temporal_data(identifier, data['price_overview']['final'] / 100, 'price')
 			result['is_free'] = False
 		result['description'] = data['about_the_game']
 		result['header_image'] = data['header_image']
