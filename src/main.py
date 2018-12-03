@@ -5,6 +5,7 @@ from ext.youtube_api import YoutubeAPI
 from ext.extractor import GameNotFound
 from db.elastic import Elastic
 from utils import setup_logger, get_all_games
+import os
 
 steam_api = SteamAPI()
 steam_spy = SteamSpy()
@@ -13,6 +14,7 @@ youtube_api = YoutubeAPI()
 
 log = setup_logger()
 log.info('Initializing Elasticsearch')
+os.remove("ids_fails.txt")
 fail_id = open("ids_fails.txt", "a")
 
 index_body = {
@@ -110,6 +112,7 @@ try:
 			else:
 				log.error(error)
 				fail_id.write(str(game_id) + " || " + str(game_name) + "\n")
+		break
 except Exception as error:
 	log.error(error)
 
