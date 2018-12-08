@@ -21,13 +21,13 @@ class Elastic(Database):
 		else:
 			raise DataNotFound('Data has not found in the Database!!!')
 
-	def update(self, identifier, data):
+	def update(self, identifier, data, doc_type):
 		if self.has_data(identifier):
 			body = {}
 			body['doc'] = data
-			self.elastic.update(index=self.index_name, doc_type='game', id=identifier, body=body)
+			self.elastic.update(index=self.index_name, doc_type=doc_type, id=identifier, body=body)
 		else:
-			self.elastic.index(index=self.index_name, doc_type='game', id=identifier, body=data)
+			self.elastic.index(index=self.index_name, doc_type=doc_type, id=identifier, body=data)
 
 	def delete(self, identifier):
 		url = 'http://{}/{}/game/{}'

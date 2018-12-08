@@ -14,7 +14,6 @@ youtube_api = YoutubeAPI()
 
 log = setup_logger()
 log.info('Initializing Elasticsearch')
-os.remove("ids_fails.txt")
 fail_id = open("ids_fails.txt", "a")
 
 index_body = {
@@ -31,41 +30,6 @@ index_body = {
 				"metacritic_score": { "type": "long" },
 				"positive_avaliantion": { "type": "long" },
 				"negative_avaliantion": { "type": "long" },
-				"median_hours_played": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					} },
-				"owners": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					} },
-				"currency": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					} },
-				"view_count": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					} },
-				"like_count": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					} },
-				"dislike_count": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					} },
-				"userscore": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					} },
 				"genres": { "type": "keyword", "store": "true" },
 				"categories": { "type": "keyword", "store": "true" },
 				"languages": { "type": "keyword", "store": "true" },
@@ -73,38 +37,34 @@ index_body = {
 				"developers": { "type": "keyword", "store": "true" },
 				"publishers": { "type": "keyword", "store": "true" },
 				"platforms": { "type": "keyword", "store": "true" },
-				"is_free": { "type": "boolean" },
-				"price": { "type": "nested",
-					"properties": {
-						"value": { "type": "double" },
-						"date": {"type": "date"}
-					}}
+				"is_free": { "type": "boolean" }
 			}
-		}
+		},
 	}
 }
 
 try:
-	elastic = Elastic('elastic:9200', 'steam')
+	elastic = Elastic('elastic:9200', 'steam_est')
 	log.info('Elasticsearch connected')
-	log.info('Creating index Steam on Elasticsearch')
+	log.info('Creating index Steam Estastic on Elasticsearch')
 	elastic.create_index(index_body)
 	log.info('Index Steam Created')
 	games = get_all_games()
+	log.debug(len(games))
 	for game in games:
 		game_id, game_name = int(game[0]), str(game[1])
 		log.info('Starting the extraction of game: %s - %s', game_id, game_name)
 		try:
-			game = steam_api.get_game(game_id)
+			game = steam_api.get_game(game_id, 'estastic')
 			log.info('Steam API: successed!')
-			game.update(steam_spy.get_game(game_id))
+			game.update(steam_spy.get_game(game_id, 'estastic'))
 			log.info('Steam SPY: successed!')
-			game.update(steam_currency.get_game(game_id))
+			game.update(steam_currency.get_game(game_id, 'estastic'))
 			log.info('Steam Currency: successed!')
-			game.update(youtube_api.get_game(game_name))
+			game.update(youtube_api.get_game(game_name, 'estastic'))
 			log.info('Youtube API: successed!')
 			log.info('Starting insersion in the Elasticsearch')
-			elastic.update(game_id, game)
+			elastic.update(game_id, game, 'game_est')
 			log.info('Finishing insersion in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
@@ -112,7 +72,6 @@ try:
 			else:
 				log.error(error)
 				fail_id.write(str(game_id) + " || " + str(game_name) + "\n")
-		break
 except Exception as error:
 	log.error(error)
 

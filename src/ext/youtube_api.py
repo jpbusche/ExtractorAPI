@@ -6,11 +6,17 @@ class YoutubeAPI(Extractor):
 
 	API_KEY = 'AIzaSyD7uEK8S8NE79iHUx70rTvwXBCEHp5BosQ'
 
-	def get_game(self, identifier):
+	def get_game(self, identifier, flag):
 		videos = self.get_videos(identifier)
 		if len(videos) != 0:
-			result = self.manipulate_data(videos, identifier)
-			return result
+			result = {}
+			if flag == 'estastic':
+				return result
+			elif flag == 'temporal':
+				result = self.manipulate_data_tmp(videos, identifier)
+				return result
+			else:
+				raise DataTypeNotFound('Data type not found!!!')
 		else:
 			raise GameNotFound("Game not found!!!")
 
@@ -31,7 +37,7 @@ class YoutubeAPI(Extractor):
 		else:
 			raise PageNotFound("Page not found!!!")
 
-	def manipulate_data(self, data, identifier):
+	def manipulate_data_tmp(self, data, identifier):
 		result = {}
 		url = 'https://www.googleapis.com/youtube/v3/videos?part=statistics&id={}&key={}'
 		sum_view = 0

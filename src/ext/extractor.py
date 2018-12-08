@@ -9,10 +9,13 @@ class Extractor(ABC):
 	url = "http://exampleofurl.com/api={}"
 
 	@abstractmethod
-	def get_game(self, identifier):
+	def get_game(self, identifier, flag):
 		pass
 
-	def manipulate_data(self, data, identifier):
+	def manipulate_data_est(self, data):
+		pass
+
+	def manipulate_data_tmp(self, data, identifier):
 		pass
 
 	def get_api(self, identifier):
@@ -43,4 +46,7 @@ class PageNotFound(Exception):
 	pass
 
 class GameNotFound(Exception):
+	pass
+
+class DataTypeNotFound(Exception):
 	pass

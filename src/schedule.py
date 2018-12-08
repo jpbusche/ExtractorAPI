@@ -8,6 +8,7 @@ from ext.steam_spy import SteamSpy
 from ext.youtube_api import YoutubeAPI
 from ext.extractor import GameNotFound
 import os
+import time
 
 app = Celery('schedule')
 steam_api = SteamAPI()
@@ -29,16 +30,16 @@ def insert_new_games():
 		game_id, game_name = int(game[0]), str(game[1])
 		log.info('Starting the extraction of game: %s - %s', game_id, game_name)
 		try:
-			game = steam_api.get_game(game_id)
+			game = steam_api.get_game(game_id, 'estastic')
 			log.info('Steam API: successed!')
-			game.update(steam_spy.get_game(game_id))
+			game.update(steam_spy.get_game(game_id, 'estastic'))
 			log.info('Steam SPY: successed!')
-			game.update(steam_currency.get_game(game_id))
+			game.update(steam_currency.get_game(game_id, 'estastic'))
 			log.info('Steam Currency: successed!')
-			game.update(youtube_api.get_game(game_name))
+			game.update(youtube_api.get_game(game_name, 'estastic'))
 			log.info('Youtube API: successed!')
 			log.info('Starting insersion in the Elasticsearch')
-			elastic.update(game_id, game)
+			elastic.update(game_id, game, 'game_est')
 			log.info('Finishing insersion in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
@@ -54,17 +55,16 @@ def update_steam_api():
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
 		try:
-			gm = steam_api.get_game(int(game[0]))
+			gm = steam_api.get_game(int(game[0]), 'temporal')
 			log.info('Extraction successed!')
 			log.info('Starting update in the Elasticsearch')
-			elastic.update(int(game[0]), gm)
+			elastic.update(int(game[0]), gm, 'game_tmp')
 			log.info('Finishing update in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
 				log.warning(error)
 			else:
 				log.error(error)
-			fail_id.write(str(game[0]) + " || " + str(game[1]) + "\n")
 
 @app.task
 def update_steam_spy():
@@ -73,17 +73,16 @@ def update_steam_spy():
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
 		try:
-			gm = steam_spy.get_game(int(game[0]))
+			gm = steam_spy.get_game(int(game[0]), 'temporal')
 			log.info('Extraction successed!')
 			log.info('Starting update in the Elasticsearch')
-			elastic.update(int(game[0]), gm)
+			elastic.update(int(game[0]), gm, 'game_tmp')
 			log.info('Finishing update in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
 				log.warning(error)
 			else:
 				log.error(error)
-			fail_id.write(str(game[0]) + " || " + str(game[1]) + "\n")
 
 @app.task
 def update_steam_currency():
@@ -92,17 +91,16 @@ def update_steam_currency():
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
 		try:
-			gm = steam_currency.get_game(int(game[0]))
+			gm = steam_currency.get_game(int(game[0]), 'temporal')
 			log.info('Extraction successed!')
 			log.info('Starting update in the Elasticsearch')
-			elastic.update(int(game[0]), gm)
+			elastic.update(int(game[0]), gm, 'game_tmp')
 			log.info('Finishing update in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
 				log.warning(error)
 			else:
 				log.error(error)
-			fail_id.write(str(game[0]) + " || " + str(game[1]) + "\n")
 
 @app.task
 def update_youtube_api():
@@ -111,17 +109,18 @@ def update_youtube_api():
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
 		try:
-			gm = youtube_api.get_game(str(game[1]))
+			gm = youtube_api.get_game(str(game[1]), 'temporal')
 			log.info('Extraction successed!')
 			log.info('Starting update in the Elasticsearch')
-			elastic.update(int(game[0]), gm)
+			elastic.update(int(game[0]), gm, 'game_tmp')
 			log.info('Finishing update in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
 				log.warning(error)
 			else:
 				log.error(error)
-			fail_id.write(str(game[0]) + " || " + str(game[1]) + "\n")
+		time.sleep(300)
+
 
 @app.task
 def try_fails_id():
@@ -132,16 +131,16 @@ def try_fails_id():
 		game_id = int(game_id)
 		log.info('Starting the extraction of game: %s - %s', game_id, game_name)
 		try:
-			game = steam_api.get_game(game_id)
+			game = steam_api.get_game(game_id, 'estastic')
 			log.info('Steam API: successed!')
-			game.update(steam_spy.get_game(game_id))
+			game.update(steam_spy.get_game(game_id, 'estastic'))
 			log.info('Steam SPY: successed!')
-			game.update(steam_currency.get_game(game_id))
+			game.update(steam_currency.get_game(game_id, 'estastic'))
 			log.info('Steam Currency: successed!')
-			game.update(youtube_api.get_game(game_name))
+			game.update(youtube_api.get_game(game_name, 'estastic'))
 			log.info('Youtube API: successed!')
 			log.info('Starting insersion in the Elasticsearch')
-			elastic.update(game_id, game)
+			elastic.update(game_id, game, 'game_est')
 			log.info('Finishing insersion in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
@@ -153,7 +152,7 @@ def try_fails_id():
 app.conf.beat_schedule = {
 	"update-steam-api": {
 		"task": "schedule.update_steam_api",
-		"schedule": crontab(minute=0, hour=0)
+		"schedule": crontab(minute="*")
 	},
 	"update-steamspy-api": {
 		"task": "schedule.update_steam_spy",
