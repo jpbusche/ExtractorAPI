@@ -25,7 +25,12 @@ index_body = {
 				"header_image": { "type": "keyword" },
 				"background_image": { "type": "keyword" },
 				"website": { "type": "keyword" },
-				"release_date": { "type": "keyword" },
+				"release_date": { "type": "nested",
+					"properties": {
+						"release_month": { "type": "keyword" },
+						"release_year": { "type": "long" },
+						"release_day": { "type": "long" },		
+					}},
 				"steam_id": { "type": "long" },
 				"metacritic_score": { "type": "long" },
 				"positive_avaliantion": { "type": "long" },
@@ -59,10 +64,6 @@ try:
 			log.info('Steam API: successed!')
 			game.update(steam_spy.get_game(game_id, 'estastic'))
 			log.info('Steam SPY: successed!')
-			game.update(steam_currency.get_game(game_id, 'estastic'))
-			log.info('Steam Currency: successed!')
-			game.update(youtube_api.get_game(game_name, 'estastic'))
-			log.info('Youtube API: successed!')
 			log.info('Starting insersion in the Elasticsearch')
 			elastic.update(game_id, game, 'game_est')
 			log.info('Finishing insersion in the Elasticsearch')

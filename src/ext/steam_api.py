@@ -21,6 +21,7 @@ class SteamAPI(Extractor):
 
 	def manipulate_data_est(self, data):
 		result = {}
+		result['release_date']= {}
 		result['genres'] = []
 		result['publishers'] = []
 		result['developers'] = []
@@ -44,11 +45,16 @@ class SteamAPI(Extractor):
 			for dvp in data['developers']:
 				result['developers'].append(dvp)
 		for plt in data['platforms']:
-			if plt: result['platforms'].append(str(plt).capitalize())
+			if data['platforms'][plt]: result['platforms'].append(str(plt).capitalize())
 		if data['release_date']['date'] != "":
-			result['release_date'] = data['release_date']['date']
+			date = data['release_date']['date'].split()
+			result['release_date']['release_month'] = date[1][:-1]
+			result['release_date']['release_year'] = int(date[2])
+			result['release_date']['release_day'] = int(date[0])
 		else:
-			result['release_date'] = '12 Set, 2003'
+			result['release_date']['release_month'] = 'Set'
+			result['release_date']['release_year'] = 2003
+			result['release_date']['release_day'] = 12
 		if 'metacritic' in data:
 			result['metacritic_score'] = data['metacritic']['score']
 		else:
@@ -66,3 +72,6 @@ class SteamAPI(Extractor):
 			result['price'] = self.temporal_data(identifier, data['price_overview']['final'] / 100, 'price')
 			result['is_free'] = False
 		return result
+
+a = SteamAPI()
+print(a.get_game(730, 'estastic'))
