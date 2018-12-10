@@ -12,17 +12,16 @@ services:
     ports:
       - 8000:8000
 
-  # celery:
-  #   depends_on:
-  #     - elastic
-  #     - redis
-  #     - extractor
-  #   build:
-  #     context: .
-  #     dockerfile: Celery.Dockerfile
-  #   volumes:
-  #     - ./:/home/ExtractorAPI
-  #   restart: always
+  celery:
+    depends_on:
+      - elastic
+      - redis
+    build:
+      context: .
+      dockerfile: Celery.Dockerfile
+    volumes:
+      - ./:/home/ExtractorAPI
+    restart: always
       
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2

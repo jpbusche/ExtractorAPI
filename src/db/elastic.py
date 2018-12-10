@@ -53,16 +53,6 @@ class Elastic(Database):
 	def delete_index(self):
 		self.elastic.indices.delete(index=self.index_name, ignore=[400, 404])
 
-	def get_all(self):
-		res = self.elastic.search(index=self.index_name, body={"query": {"match_all":{}}})
-		size = res['hits']['total']
-		res = self.elastic.search(index=self.index_name, body={"size": size, "query": {"match_all":{}}})
-		games = []
-		for game in res['hits']['hits']:
-			pair = (int(game['_id']), game['_source']['name'])
-			games.append(pair)
-		return games
-
 	def create_index(self, index_body):
 		if self.elastic.indices.exists(self.index_name): self.delete_index()
 		self.elastic.indices.create(index=self.index_name, body=index_body, ignore=400)

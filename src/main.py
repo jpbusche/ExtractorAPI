@@ -5,7 +5,7 @@ from ext.youtube_api import YoutubeAPI
 from ext.extractor import GameNotFound
 from db.elastic import Elastic
 from utils import setup_logger, get_all_games
-import os
+import time
 
 steam_api = SteamAPI()
 steam_spy = SteamSpy()
@@ -42,7 +42,6 @@ index_body = {
 				"developers": { "type": "keyword", "store": "true" },
 				"publishers": { "type": "keyword", "store": "true" },
 				"platforms": { "type": "keyword", "store": "true" },
-				"is_free": { "type": "boolean" }
 			}
 		},
 	}
@@ -72,7 +71,8 @@ try:
 				log.warning(error)
 			else:
 				log.error(error)
-				fail_id.write(str(game_id) + " || " + str(game_name) + "\n")
+			time.sleep(300)
+			fail_id.write(str(game_id) + " || " + str(game_name) + "\n")
 except Exception as error:
 	log.error(error)
 

@@ -6,5 +6,56 @@ do
     sleep 30
 done
 echo "Connected with Elasticsearch"
+curl -X PUT "elastic:9200/steam_tmp" -H 'Content-Type: application/json' -d'
+{
+    "mappings" : {
+        "game_tmp" : {
+            "properties" : {
+                "price": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "double" }
+					}},
+				"userscore": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "double" }
+					}},
+				"currency": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "long" }
+					}},
+				"median_hours_played": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "long" }
+					}},
+				"owners": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "long" }
+					}},
+				"view_count": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "long" }
+					}},
+				"like_count": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "long" }
+					}},
+				"dislike_count": { "type": "nested",
+					"properties": {
+						"date": { "type": "date" },
+						"release_year": { "type": "long" }
+					}},
+				"is_free": { "type": "boolean" }
+            }
+        }
+    }
+}
+'
 cd src/
 celery -A schedule worker -B
