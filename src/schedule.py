@@ -34,7 +34,6 @@ def insert_new_games():
 			log.info('Steam API: successed!')
 			game.update(steam_spy.get_game(game_id, 'estastic'))
 			log.info('Steam SPY: successed!')
-			game.update(steam_currency.get_game(game_id, 'estastic'))
 			log.info('Starting insersion in the Elasticsearch')
 			elastic.update(game_id, game, 'game_est')
 			log.info('Finishing insersion in the Elasticsearch')
@@ -47,18 +46,23 @@ def insert_new_games():
 			fail_id.write(str(game_id) + " || " + str(game_name) + "\n")
 
 @app.task
-def update_steam_api():
+def once_a_day():
 	elastic = Elastic('elastic:9200', 'steam_tmp')
 	log.info('Updating data from Steam API!')
 	games = get_games_db()
 	for game in games:
-		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
+		game_id, game_name = int(game[0]), str(game[1])
+		log.info('Starting the extraction of game: %s - %s', game_id, game_name)
 		try:
-			gm = steam_api.get_game(int(game[0]), 'temporal')
-			log.info('Extraction successed!')
-			log.info('Starting update in the Elasticsearch')
-			elastic.update(int(game[0]), gm, 'game_tmp')
-			log.info('Finishing update in the Elasticsearch')
+			gm = steam_api.get_game(game_id, 'temporal')
+			log.info('Steam API: successed!')
+			gm.update(steam_spy.get_game(game_id, 'temporal'))
+			log.info('Steam SPY: successed!')
+			gm.update(steam_currency.get_game(game_id, 'temporal'))
+			log.info('Steam Currency: successed!')
+			log.info('Starting insersion in the Elasticsearch')
+			elastic.update(game_id, gm, 'game_tmp')
+			log.info('Finishing insersion in the Elasticsearch')
 		except Exception as error:
 			if type(error) == GameNotFound:
 				log.warning(error)
@@ -68,56 +72,15 @@ def update_steam_api():
 			games.append(game)
 
 @app.task
-def update_steam_spy():
+def once_a_week():
 	elastic = Elastic('elastic:9200', 'steam_tmp')
-	log.info('Updating data from Steamspy API!')
-	games = get_games_db()
-	for game in games:
-		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
-		try:
-			gm = steam_spy.get_game(int(game[0]), 'temporal')
-			log.info('Extraction successed!')
-			log.info('Starting update in the Elasticsearch')
-			elastic.update(int(game[0]), gm, 'game_tmp')
-			log.info('Finishing update in the Elasticsearch')
-		except Exception as error:
-			if type(error) == GameNotFound:
-				log.warning(error)
-			else:
-				log.error(error)
-			games.append(game)
-
-@app.task
-def update_steam_currency():
-	elastic = Elastic('elastic:9200', 'steam_tmp')
-	log.info('Updating data from Steam Currency!')
-	games = get_games_db()
-	for game in games:
-		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
-		try:
-			gm = steam_currency.get_game(int(game[0]), 'temporal')
-			log.info('Extraction successed!')
-			log.info('Starting update in the Elasticsearch')
-			elastic.update(int(game[0]), gm, 'game_tmp')
-			log.info('Finishing update in the Elasticsearch')
-		except Exception as error:
-			if type(error) == GameNotFound:
-				log.warning(error)
-			else:
-				log.error(error)
-			time.sleep(300)
-			games.append(game)
-
-@app.task
-def update_youtube_api():
-	elastic = Elastic('elastic:9200', 'steam_tmp')
-	log.info('Updating data from Youtube API!')
+	log.info('Updating data omce a week!')
 	games = get_games_db()
 	for game in games:
 		log.info('Starting the extraction of game: %s - %s', game[0], game[1])
 		try:
 			gm = youtube_api.get_game(str(game[1]), 'temporal')
-			log.info('Extraction successed!')
+			log.info('Youtube API: successed!')
 			log.info('Starting update in the Elasticsearch')
 			elastic.update(int(game[0]), gm, 'game_tmp')
 			log.info('Finishing update in the Elasticsearch')
@@ -156,21 +119,13 @@ def try_fails_id():
 	os.remove("ids_fails.txt")
 
 app.conf.beat_schedule = {
-	"update-steam-api": {
-		"task": "schedule.update_steam_api",
+	"update-once-a-day": {
+		"task": "schedule.once_a_day",
 		"schedule": crontab(minute=0, hour=8)
 	},
-	"update-steamspy-api": {
-		"task": "schedule.update_steam_spy",
-		"schedule": crontab(minute=0, hour=8)
-	},
-	"update-currency-api": {
-		"task": "schedule.update_steam_currency",
-		"schedule": crontab(minute=0, hour=8)
-	},
-	"update-youtube-api": {
+	"update-once-a-week": {
 		"task": "schedule.update_youtube_api",
-		"schedule": crontab(minute=0, hour=8)
+		"schedule": crontab(minute=0, hour=0, day_of_week='monday')
 	},
 	"insert-new-games": {
 		"task": "schedule.insert_new_games",
