@@ -72,6 +72,3 @@ class SteamAPI(Extractor):
 			result['price'] = self.temporal_data(identifier, data['price_overview']['final'] / 100, 'price')
 			result['is_free'] = False
 		return result
-
-a = SteamAPI()
-print(a.get_game(730, 'estastic'))

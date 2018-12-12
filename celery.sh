@@ -14,42 +14,42 @@ curl -X PUT "elastic:9200/steam_tmp" -H 'Content-Type: application/json' -d'
                 "price": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "double" }
+						"value": { "type": "double" }
 					}},
 				"userscore": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "double" }
+						"value": { "type": "double" }
 					}},
 				"currency": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "long" }
+						"value": { "type": "long" }
 					}},
 				"median_hours_played": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "long" }
+						"value": { "type": "long" }
 					}},
 				"owners": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "long" }
+						"value": { "type": "long" }
 					}},
 				"view_count": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "long" }
+						"value": { "type": "long" }
 					}},
 				"like_count": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "long" }
+						"value": { "type": "long" }
 					}},
 				"dislike_count": { "type": "nested",
 					"properties": {
 						"date": { "type": "date" },
-						"release_year": { "type": "long" }
+						"value": { "type": "long" }
 					}},
 				"is_free": { "type": "boolean" }
             }
